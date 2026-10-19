@@ -23,4 +23,4 @@
   
   
 ## Contact  
-Alaina Srivastav ([email])  
+Alaina Srivastav ([asrivastav2@wisc.edu])  
