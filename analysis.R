@@ -159,18 +159,26 @@ round(prop.table(table(df$Cycle, df$Any_Harm_Follow), margin = 1), 2)
 harm_formula <- as.formula(paste("Any_Harm_Follow ~ Cycle +", covar_formula))
 
 m_harm <- glm(harm_formula, data = df, family = binomial)
-broom::tidy(m_harm, exponentiate = TRUE, conf.int = TRUE) %>%
-  dplyr::filter(grepl("^Cycle", term))
-car::Anova(m_harm, type = "II")   # omnibus likelihood-ratio test for Cycle
+harm_tab <- broom::tidy(m_harm, conf.int = TRUE) %>%
+  dplyr::filter(grepl("^Cycle", term)) %>%
+  dplyr::transmute(comparison = sub("^Cycle", "During vs. ", term),
+                   OR    = exp(-estimate),
+                   lower = exp(-conf.high),
+                   upper = exp(-conf.low),
+                   p     = p.value)
+print(harm_tab, digits = 3)
+car::Anova(m_harm, type = "II")
 
 m_harm_firth <- logistf(harm_formula, data = df)
 firth_tab <- data.frame(
-  OR    = exp(coef(m_harm_firth)),
-  lower = exp(m_harm_firth$ci.lower),
-  upper = exp(m_harm_firth$ci.upper),
+  OR    = exp(-coef(m_harm_firth)),
+  lower = exp(-m_harm_firth$ci.upper),
+  upper = exp(-m_harm_firth$ci.lower),
   p     = m_harm_firth$prob
 )
-round(firth_tab[grepl("^Cycle", rownames(firth_tab)), ], 3)
+firth_tab <- firth_tab[grepl("^Cycle", rownames(firth_tab)), ]
+rownames(firth_tab) <- sub("^Cycle", "During vs. ", rownames(firth_tab))
+round(firth_tab, 3)
 
 # -------------------------------------------------------------------------
 # 7. Exploratory subscale models with FDR correction (Table S1)
@@ -219,3 +227,4 @@ print(tab_bin, n = Inf)
 
 # -------------------------------------------------------------------------
 sessionInfo()
+
