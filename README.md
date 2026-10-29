@@ -16,7 +16,7 @@
 | EDI_Follow_1–8 | Ego Dissolution Inventory items | 0–100 |
 | MEQ_Follow_1–30 | Mystical Experience Questionnaire items | 0–5 |
 | CEQ_Follow_1–26 | Challenging Experience Questionnaire items | 0–5 |
-| EDI_Follow_Total, MEQ_Follow_Total, CEQ_Follow_Total | Total scores (mean of items) |  |
+| EDI_Follow_Total, MEQ_Follow_Total, CEQ_Follow_Total | Total scores (mean of items; MEQ total is the mean of all 30 items) |  |
 | MEQ_*_Follow | MEQ subscale scores: Mystical, Positive mood, Transcendence, Ineffability | mean of items |
 | CEQ_*_Follow | CEQ subscale scores: Fear, Grief, Physical distress, Insanity, Isolation, Death, Paranoia | mean of items |
 | Any_Harm_Follow | Thoughts or attempts to harm oneself or others in the time after the experience | 0 = no, 1 = yes |
