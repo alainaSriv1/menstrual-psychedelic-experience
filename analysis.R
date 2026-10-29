@@ -19,6 +19,9 @@ df <- read.csv("data/menstruation_psychedelics_minimal.csv",
                stringsAsFactors = FALSE)
 stopifnot(nrow(df) == 169)
 
+# MEQ total = mean of the 30 individual items (Barrett et al., 2015)
+df$MEQ_Follow_Total <- rowMeans(df[, paste0("MEQ_Follow_", 1:30)])
+
 # -------------------------------------------------------------------------
 # 1. Four-level cycle status (reference = menstruating during experience)
 # -------------------------------------------------------------------------
@@ -224,6 +227,28 @@ m_bin <- lapply(primary_outcomes, function(y)
 tab_bin <- bind_rows(lapply(names(m_bin), function(nm)
   clean_lm(m_bin[[nm]], nm, pattern = "^Cycle_Bin")))
 print(tab_bin, n = Inf)
+
+# -------------------------------------------------------------------------
+# 9. Additional analysis: sex at birth only (Table S4)
+#    Female vs. male participants (reference = male), same covariates,
+#    for all outcomes: totals, subscales, and risk of harm
+# -------------------------------------------------------------------------
+df <- df %>%
+  mutate(Sex = factor(ifelse(Sex_Birth_Follow == 1, "Female", "Male"),
+                      levels = c("Male", "Female")))
+
+sex_outcomes <- c(primary_outcomes, subscale_outcomes)
+
+tab_sex <- bind_rows(lapply(names(sex_outcomes), function(nm) {
+  m <- lm(as.formula(paste(sex_outcomes[[nm]], "~ Sex +", covar_formula)), data = df)
+  clean_lm(m, nm, pattern = "^Sex")
+}))
+print(tab_sex, n = Inf)
+
+m_harm_sex <- glm(as.formula(paste("Any_Harm_Follow ~ Sex +", covar_formula)),
+                  data = df, family = binomial)
+broom::tidy(m_harm_sex, exponentiate = TRUE, conf.int = TRUE) %>%
+  dplyr::filter(grepl("^Sex", term))
 
 # -------------------------------------------------------------------------
 sessionInfo()
